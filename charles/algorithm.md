@@ -6,8 +6,7 @@ com.xk72.charles;
 str : Name
 str2: License
 i2  : 4
-```
-
+```c
 private long a(String str, String str2, int i2) {
     // license长度为18
     if (str2.length() != 18) {

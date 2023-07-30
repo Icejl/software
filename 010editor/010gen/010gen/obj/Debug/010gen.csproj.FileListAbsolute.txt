@@ -1,0 +1,11 @@
+D:\my\project\010gen\010gen\obj\Debug\010gen.csproj.AssemblyReference.cache
+D:\my\project\010gen\010gen\obj\Debug\010gen.csproj.SuggestedBindingRedirects.cache
+D:\my\project\010gen\010gen\obj\Debug\_010gen.Form1.resources
+D:\my\project\010gen\010gen\obj\Debug\_010gen.Properties.Resources.resources
+D:\my\project\010gen\010gen\obj\Debug\010gen.csproj.GenerateResource.cache
+D:\my\project\010gen\010gen\obj\Debug\010gen.csproj.CoreCompileInputs.cache
+D:\my\project\010gen\010gen\bin\Debug\010gen.exe.config
+D:\my\project\010gen\010gen\bin\Debug\010gen.exe
+D:\my\project\010gen\010gen\bin\Debug\010gen.pdb
+D:\my\project\010gen\010gen\obj\Debug\010gen.exe
+D:\my\project\010gen\010gen\obj\Debug\010gen.pdb
