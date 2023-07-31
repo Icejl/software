@@ -31,12 +31,8 @@ def name_to_bytes(name):
 def long_xor(num):
     t = 0
     for i in range(8):
-        t ^= (num >> 8)&0xff
+        t ^= num&0xff
         num >>= 8
-    
-    t = t & 0xff
-    if t & 0x80:
-        t = 0x100 - t
     
     return t
 
@@ -47,7 +43,7 @@ def init_rc5( key_long ):
     
 
 def deal_name(name):
-    expand_key = init_rc5(8800536498351690864)
+    expand_key = init_rc5(0x7a21c951691cd470)
     arr = name_to_bytes(name)
     new_arr = [0] * len(arr)
     for i in range(0,len(arr),8):
@@ -56,10 +52,11 @@ def deal_name(name):
         num =  bytes_to_long( t )
         num_to_list(new_arr,i,num,8)
    
-    print(bytes(new_arr))
     b = 0
     for i in range(len(new_arr)):
-        t = b ^ new_arr[i]
+        # 高位扩展
+        a = new_arr[i] | 0xffffff00 if  new_arr[i] & 0x80  else new_arr[i]
+        t = b ^ a
         b = _rotate_left(t,3,32)
     
     return b & 0xffffffff
@@ -69,10 +66,20 @@ def deal_license(lic):
     b = int(lic[0:2],16)
     expand_key = init_rc5(-5408575981733630035)
     c = _encrypt_block(long_to_bytes(a),expand_key,64,12)
-    print(c.hex())
     c = bytes_to_long(c)
     print(hex(c),long_xor(c),b)
 
+def get_serail( num ):
+    serial = (num << 32) | 0x1CAD6BC
+    print(hex(serial))
+    expand_key = init_rc5(-5408575981733630035)
+    c = _decrypt_block(long_to_bytes(serial),expand_key,64,12)
+    
+    a = long_xor(serial)
+    
+    t = c + a.to_bytes(1,byteorder='little',signed=False)
+    print(t[::-1].hex())
+    
 
 def check(num):
     n = long_xor(num)
@@ -81,9 +88,8 @@ def check(num):
     for i in range(n + 35):
         t = _encrypt_block(t,expand_key,64,12)
     
-    print(t.hex())
     t = bytes_to_long( t )
-    if t == 5911726755176091652:
+    if t == 0x520aac2983719004:
         return True
         
     return False
@@ -107,17 +113,25 @@ abna
 
 if __name__=='__main__':
     #fuck()
-    #t = deal_name('test')
+    t = deal_name('test')
+    print(hex(t))
+    t ^= 1418211210
+    check(t | 0xA58D19C600000000)
+    get_serail(t)
+    
+    
+    #print(hex( t ))
     #print(hex( t ^ 0x54882F8A ))
     #deal_license('418d594b8d21d39020')
     #deal_license('0c18080103e2a7a7eb')
     #deal_license('09894df985f814fe78')
-    #exit()
+    exit()
         
 
 
 
     expand_key = init_rc5(0x7a21c951691cd470)
+    print(expand_key)
     data = b"test"
     res = _encrypt_block(data,expand_key,64,12)
     print(res.hex())
