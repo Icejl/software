@@ -1,5 +1,6 @@
 
 from rc5 import _expand_key,_encrypt_block,_rotate_left,_decrypt_block
+import random
 
 def long_to_bytes(num):
     num &= 2**64 - 1 
@@ -54,7 +55,7 @@ def deal_name(name):
    
     b = 0
     for i in range(len(new_arr)):
-        # 高位扩展
+        # 恶心，高位扩展
         a = new_arr[i] | 0xffffff00 if  new_arr[i] & 0x80  else new_arr[i]
         t = b ^ a
         b = _rotate_left(t,3,32)
@@ -67,25 +68,25 @@ def deal_license(lic):
     expand_key = init_rc5(-5408575981733630035)
     c = _encrypt_block(long_to_bytes(a),expand_key,64,12)
     c = bytes_to_long(c)
-    print(hex(c),long_xor(c),b)
+    return c
 
 def get_serail( num ):
-    serial = (num << 32) | 0x1CAD6BC
-    print(hex(serial))
+    rn = random.randint(0,0xffff)
+    serial = (num << 32) | 0x04020000 | rn #0x1CAD6BC
     expand_key = init_rc5(-5408575981733630035)
     c = _decrypt_block(long_to_bytes(serial),expand_key,64,12)
     
     a = long_xor(serial)
     
     t = c + a.to_bytes(1,byteorder='little',signed=False)
-    print(t[::-1].hex())
+    return t[::-1].hex()
     
 
 def check(num):
     n = long_xor(num)
     expand_key = init_rc5(num)
     t = long_to_bytes( num )
-    for i in range(n + 35):
+    for i in range( (n + 35) & 0xff):
         t = _encrypt_block(t,expand_key,64,12)
     
     t = bytes_to_long( t )
@@ -94,12 +95,10 @@ def check(num):
         
     return False
 
-def fuck():
-    num = 0x234b56ea ^ deal_name('test')
-    num |= 0xA58D19C600000000
-    print(check(num))
-            
 '''
+生成的license
+https://www.zzzmode.com/mytools/charles/
+
 test
 418d594b8d21d39020
 
@@ -112,38 +111,12 @@ abna
 
 
 if __name__=='__main__':
-    #fuck()
-    t = deal_name('test')
-    print(hex(t))
-    t ^= 1418211210
-    check(t | 0xA58D19C600000000)
-    get_serail(t)
-    
-    
-    #print(hex( t ))
-    #print(hex( t ^ 0x54882F8A ))
-    #deal_license('418d594b8d21d39020')
-    #deal_license('0c18080103e2a7a7eb')
-    #deal_license('09894df985f814fe78')
+    name = input()
+    t = deal_name(name)
+    lic = get_serail(t ^ 1418211210)
+    print("name = ",name)
+    print("license = ",lic)
+    c = deal_license(lic)
+    if check( (t ^ (c >> 32)) | 0xA58D19C600000000):
+        print("check ok.")
     exit()
-        
-
-
-
-    expand_key = init_rc5(0x7a21c951691cd470)
-    print(expand_key)
-    data = b"test"
-    res = _encrypt_block(data,expand_key,64,12)
-    print(res.hex())
-    
-    exit()
-    t = _decrypt_block(res,expand_key,64,12)
-    print(t)
-    exit()
-    
-    lst = [0]*8
-    num_to_list(lst,0,-5408575981733630035,8)
-    print(lst)
-    print(hex(list_to_int(lst,0,8)))
-    j = deal_name("test")
-    print(hex(j))

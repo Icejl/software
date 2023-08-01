@@ -1,14 +1,16 @@
 
+# charles license算法分析
 
-https://www.zzzmode.com/mytools/charles/
+1. 算法分析发现基本上是不可逆的（之后在网上找到了两个magic数，可以通过验证）
+2. 通过对比网上的注册机和在线生成的license，发现同名可以有不同的license，说明magic数不唯一 （算法中确实有部分内容可以随机）
 
-com.xk72.charles;
 
+## license处理过程
 
 str : Name
 str2: License
 i2  : 4
-```c
+```java
 private long a(String str, String str2, int i2) {
     // license长度为18
     if (str2.length() != 18) {
@@ -32,6 +34,13 @@ private long a(String str, String str2, int i2) {
     if (a(b3) != b2) {
         throw new LicenseException(n(1));
     }
+    /*
+        这里分为两段进行校验：
+        1. 高4位是与用户名进行校验 （这里涉及到网上的一个magic数1418211210，因为算法是不可逆的）
+        2. 低4位用做type校验（实际只有两位有用，有以下两种情况，网上找到的magic是0x1CAD6BC，也就是第一种情况，测试0x0401xxxx也可以用）
+            a. 01 xx xx xx
+            b. 04 01/02/03 xx xx    （不清楚各类licence有什么区别但是都能用）
+    */
     // xx xx xx xx 01 xx xx xx
     this.ae = (int) (((b3 << 32) >>> 32) >>> 24);
     if (this.ae == 1) {
@@ -138,6 +147,10 @@ private boolean n(long j2) {
     // long an = 5911726755176091652L;
     return j3 == an;
 }
-
-
 ```
+
+## license生成网站
+
+https://www.zzzmode.com/mytools/charles/
+
+PS：以后不能用python代码取实现java中的算法，符号处理问题太多
