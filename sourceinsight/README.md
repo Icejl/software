@@ -1,8 +1,6 @@
 
 # source insight 4
 
-version: xx
-
 ## 注册码
 
 通过导入si4.lic文件进行注册，有以下校验：
@@ -22,12 +20,13 @@ struct __declspec(align(4)) stu
   char serial[38];
   char field_2A[218];
   char LicensedUser[127];
+  char field_183;
   int field_184;
   char fill[124];
   char Organization[256];
   char Email[768];
   int version;
-  _BYTE gap608[4];
+  int field_608;
   int type;
   char Expiration[12];
   char Date[12];
@@ -37,7 +36,6 @@ struct __declspec(align(4)) stu
   char field_73A[34];
   char lic_file[34];
 };
-
 ```
 
 xml 结构体
@@ -55,7 +53,6 @@ struct xml
   struct xml *offset;
 };
 ```
-
 
 ## 注册逻辑
 
